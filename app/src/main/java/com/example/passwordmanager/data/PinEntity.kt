@@ -6,6 +6,6 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class PinEntity(
-    @PrimaryKey val uid: Int,
-    @ColumnInfo(name = "Pin") val pin: String? // just let it be a stringg pleease
+    @PrimaryKey(autoGenerate = true) val uid: Int = 0,
+    @ColumnInfo(name = "Pin") val pin: String // just let it be a stringg pleease
 )

@@ -16,9 +16,6 @@ class ViewModelFactory(
             modelClass.isAssignableFrom(MainViewModel::class.java) ->
                 MainViewModel(dao) as T
 
-            modelClass.isAssignableFrom(PasswordListViewModel::class.java) ->
-                PasswordListViewModel(dao) as T
-
             else ->
                 throw IllegalArgumentException("Unknown ViewModel class")
         }

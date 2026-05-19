@@ -37,9 +37,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import androidx.room.Room
 import com.example.passwordmanager.data.AppDatabase
 import com.example.passwordmanager.ui.theme.PasswordManagerTheme
+import kotlinx.serialization.Serializable
 
 
 class MainActivity : ComponentActivity() {
@@ -48,71 +53,39 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PasswordManagerTheme {
-                val app = application as PasswordManagerApp
-                val dao = app.db.pinDao()
-                val viewModel: MainViewModel = viewModel( // viewModel maken met factory voor db
-                    factory = ViewModelFactory(dao)
-                )
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    PasswordScreen(viewModel)
+                    MyApp()
                     }
                 }
             }
         }
     }
-
-
-
-class DigitOnlyInputTransformation : InputTransformation {
-    override fun TextFieldBuffer.transformInput() {
-        if (!asCharSequence().isDigitsOnly()) {
-            revertAllChanges()
+@Serializable
+object NewPinScreenRoute
+@Serializable
+object PasswordScreenRoute
+@Composable
+fun MyApp() {
+    val navController = rememberNavController()
+    NavHost(
+        navController = navController,
+        startDestination = PasswordScreenRoute
+    ) {
+        composable<PasswordScreenRoute> {
+            PasswordScreen(
+                onNavigateToNewPin = {
+                    navController.navigate(NewPinScreenRoute)
+                }
+            )
+        }
+        composable<NewPinScreenRoute> {
+            NewPinScreen()
         }
     }
 }
 
-@Composable
-fun PasswordScreen(viewModel: MainViewModel){
-    var password by remember { mutableStateOf("") }
-    val length = 5
-    Surface {
-    Box(modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = "Enter PIN",
-                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 37.sp),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
 
-            var text by remember { mutableStateOf("") }
-            TextField(
-                value = text,
-                onValueChange = {
-                    text = it.filter { c -> c.isDigit() }.take(5)
-                },
-                textStyle = TextStyle(
-                    textAlign = TextAlign.Center,
-                    fontSize = 24.sp
-                ),
-                modifier = Modifier.width(120.dp),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Go
-                ),
-                keyboardActions = KeyboardActions(
-                    onGo = {
-                        viewModel.PinInput(text)
-                    }
-                )
-            )
-        }
-    }
-}
-}
-@Preview
-@Composable
-fun PreviewPasswordScreen(viewModel: MainViewModel){
-    PasswordScreen(viewModel)
-}
+
+
+
+

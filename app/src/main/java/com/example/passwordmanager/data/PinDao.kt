@@ -23,4 +23,7 @@ interface PinDao {
 
     @Delete
     fun delete(pin: PinEntity)
+
+    @Insert
+    fun insertPin(pin: PinEntity)
 }

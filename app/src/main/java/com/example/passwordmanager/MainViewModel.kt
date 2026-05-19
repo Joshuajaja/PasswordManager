@@ -15,11 +15,13 @@ class MainViewModel(private val dao: PinDao) : ViewModel() {
         viewModelScope.launch {
             val hasPin = dao.hasAnyPin()
 
-            if (!hasPin){}
+            if (!hasPin){
+
+            }
             else{}
         }
     }
-    fun PinInput(userInputPin: String) {
+    fun pinInput(userInputPin: String) {
         pin = userInputPin
         viewModelScope.launch {
             dbCompare(pin) }
