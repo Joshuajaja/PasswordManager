@@ -14,6 +14,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,14 +28,41 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
+import androidx.navigation.NavController
 
 @Composable
-fun NewPinScreen(){
+fun NewPinScreen(navController: NavController){
     val app = androidx.compose.ui.platform.LocalContext.current.applicationContext
             as PasswordManagerApp
     val dao = app.db.pinDao()
     val viewModel: NewPinViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = ViewModelFactory(dao))
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+
+                UiEvent.NavigateToNewPin -> {
+                    navController.navigate(NewPinScreenRoute) {
+                        popUpTo(PasswordScreenRoute) { inclusive = true }
+                    }
+                }
+
+                UiEvent.NavigateToPassword -> {
+                    navController.navigate(PasswordScreenRoute) {
+                        popUpTo(NewPinScreenRoute) { inclusive = true }
+                    }
+                }
+
+                UiEvent.NavigateToPasswordList -> {
+                    navController.navigate(PasswordListScreenRoute) {
+                        launchSingleTop = true
+                    }
+                }
+            }
+        }
+    }
+
     Surface {
         Box(modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center) {

@@ -22,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,22 +65,58 @@ class MainActivity : ComponentActivity() {
 object NewPinScreenRoute
 @Serializable
 object PasswordScreenRoute
+@Serializable
+object PasswordListScreenRoute
+sealed class UiEvent {
+    data object NavigateToNewPin : UiEvent()
+    data object NavigateToPassword : UiEvent()
+    data object NavigateToPasswordList : UiEvent()
+}
 @Composable
 fun MyApp() {
+    val app = androidx.compose.ui.platform.LocalContext.current.applicationContext
+            as PasswordManagerApp
+    val dao = app.db.pinDao()
+    val viewModel: MyAppViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = ViewModelFactory(dao))
     val navController = rememberNavController()
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+
+                UiEvent.NavigateToNewPin -> {
+                    navController.navigate(NewPinScreenRoute) {
+                        popUpTo(PasswordScreenRoute) { inclusive = true }
+                    }
+                }
+
+                UiEvent.NavigateToPassword -> {
+                    navController.navigate(PasswordScreenRoute) {
+                        popUpTo(NewPinScreenRoute) { inclusive = true }
+                    }
+                }
+
+                UiEvent.NavigateToPasswordList -> {
+                    navController.navigate(PasswordListScreenRoute) {
+                        launchSingleTop = true
+                    }
+                }
+            }
+        }
+    }
     NavHost(
         navController = navController,
         startDestination = PasswordScreenRoute
     ) {
         composable<PasswordScreenRoute> {
-            PasswordScreen(
-                onNavigateToNewPin = {
-                    navController.navigate(NewPinScreenRoute)
-                }
-            )
+            PasswordScreen(navController = navController)
         }
         composable<NewPinScreenRoute> {
-            NewPinScreen()
+            NewPinScreen(navController = navController)
+        }
+        composable<PasswordListScreenRoute>{
+            PasswordListScreen(navController = navController)
         }
     }
 }

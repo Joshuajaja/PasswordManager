@@ -4,10 +4,19 @@ import androidx.lifecycle.ViewModel
 import com.example.passwordmanager.data.PinDao
 import com.example.passwordmanager.data.PinEntity
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class NewPinViewModel(private val dao: PinDao) : ViewModel() {
-     fun newPin(Pin: String){
+    private val _events = kotlinx.coroutines.flow.MutableSharedFlow<UiEvent>()
+    val events = _events
+       fun newPin(Pin: String){
         val NewPin = PinEntity(pin = Pin)
-        dao.insertPin(NewPin)
-    }
+        viewModelScope.launch {
+           withContext(Dispatchers.IO) {
+           dao.insertPin(NewPin) }
+            _events.emit(UiEvent.NavigateToPassword)
+           }
+     }
 }

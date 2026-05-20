@@ -16,6 +16,12 @@ class ViewModelFactory(
             modelClass.isAssignableFrom(MainViewModel::class.java) ->
                 MainViewModel(dao) as T
 
+            modelClass.isAssignableFrom(MyAppViewModel::class.java) ->
+                MyAppViewModel(dao) as T
+
+            modelClass.isAssignableFrom(NewPinViewModel::class.java) ->
+                NewPinViewModel(dao) as T
+
             else ->
                 throw IllegalArgumentException("Unknown ViewModel class")
         }
