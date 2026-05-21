@@ -44,8 +44,9 @@ fun PasswordScreen(navController: NavController){
     val app = androidx.compose.ui.platform.LocalContext.current.applicationContext
             as PasswordManagerApp
     val dao = app.db.pinDao()
+    val passwordDao = app.db.PasswordDao()
     val viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = ViewModelFactory(dao))
+        factory = ViewModelFactory(dao, passwordDao))
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->

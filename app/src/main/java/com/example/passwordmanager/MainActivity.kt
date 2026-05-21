@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -37,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -44,6 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import androidx.room.Room
 import com.example.passwordmanager.data.AppDatabase
+import com.example.passwordmanager.data.PasswordDao
 import com.example.passwordmanager.ui.theme.PasswordManagerTheme
 import kotlinx.serialization.Serializable
 
@@ -74,13 +77,16 @@ sealed class UiEvent {
 }
 @Composable
 fun MyApp() {
-    val app = androidx.compose.ui.platform.LocalContext.current.applicationContext
+    val app = LocalContext.current.applicationContext
             as PasswordManagerApp
     val dao = app.db.pinDao()
-    val viewModel: MyAppViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = ViewModelFactory(dao))
+    val passwordDao = app.db.PasswordDao()
+    val viewModel: MyAppViewModel = viewModel(
+        factory = ViewModelFactory(dao, passwordDao))
     val navController = rememberNavController()
-
+    val passwords by viewModel.passwords.collectAsStateWithLifecycle(
+        initialValue = emptyList()
+    )
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
@@ -116,7 +122,7 @@ fun MyApp() {
             NewPinScreen(navController = navController)
         }
         composable<PasswordListScreenRoute>{
-            PasswordListScreen(navController = navController)
+            PasswordListScreen(navController = navController, passwords)
         }
     }
 }
