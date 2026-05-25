@@ -10,4 +10,10 @@ import kotlinx.coroutines.launch
 class PasswordListViewModel (private val dao: PasswordDao) : ViewModel() {
     private val _events = kotlinx.coroutines.flow.MutableSharedFlow<UiEvent>()
     val events = _events
+
+    fun toNewPasswordPage(){
+        viewModelScope.launch {
+            _events.emit(UiEvent.NavigateToPassword)
+        }
+    }
 }
