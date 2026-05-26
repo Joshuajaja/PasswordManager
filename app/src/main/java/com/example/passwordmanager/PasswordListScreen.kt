@@ -1,7 +1,9 @@
 package com.example.passwordmanager
 
+import android.annotation.SuppressLint
 import android.graphics.fonts.FontFamily
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,13 +39,14 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.passwordmanager.data.PasswordEntity
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun PasswordListScreen(navController: NavController, passwords: List<PasswordEntity>){
     val app = androidx.compose.ui.platform.LocalContext.current.applicationContext
             as PasswordManagerApp
     val dao = app.db.pinDao()
     val passwordDao = app.db.PasswordDao()
-    val viewModel: PasswordListViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+     val viewModel: PasswordListViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = ViewModelFactory(dao, passwordDao))
                 LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
@@ -66,15 +69,25 @@ fun PasswordListScreen(navController: NavController, passwords: List<PasswordEnt
                         launchSingleTop = true
                     }
                 }
+                UiEvent.NavigateToNewPass -> {
+                    navController.navigate(NewPassScreenRoute) {
+                        launchSingleTop = true
+                    }
+                }
+                UiEvent.NavigateToPasswordView -> {
+                    navController.navigate(PasswordViewScreenRoute) {
+                        launchSingleTop = true
+                    }
+                }
             }
         }
     }
 
 
     Surface {
-        Box(modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top,
                     modifier = Modifier.safeDrawingPadding()) {
                 items(passwords){
                     password -> PasswordItem(password)
@@ -97,7 +110,10 @@ fun PasswordItem(password: PasswordEntity) {
     Row(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(all = 8.dp).fillMaxWidth()) {
+        modifier = Modifier
+            .padding(all = 8.dp)
+            .fillMaxWidth()
+            .clickable{}) {
         Image(
             painter = painterResource(R.drawable.folder_document_file_format_svgrepo_com),
             contentDescription = null,

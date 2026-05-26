@@ -13,7 +13,7 @@ class PasswordListViewModel (private val dao: PasswordDao) : ViewModel() {
 
     fun toNewPasswordPage(){
         viewModelScope.launch {
-            _events.emit(UiEvent.NavigateToPassword)
+            _events.emit(UiEvent.NavigateToNewPass)
         }
     }
 }

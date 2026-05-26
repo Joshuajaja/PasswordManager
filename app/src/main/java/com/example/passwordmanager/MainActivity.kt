@@ -70,10 +70,16 @@ object NewPinScreenRoute
 object PasswordScreenRoute
 @Serializable
 object PasswordListScreenRoute
+@Serializable
+object NewPassScreenRoute
+@Serializable
+object PasswordViewScreenRoute
 sealed class UiEvent {
     data object NavigateToNewPin : UiEvent()
     data object NavigateToPassword : UiEvent()
     data object NavigateToPasswordList : UiEvent()
+    data object NavigateToNewPass : UiEvent()
+    data object NavigateToPasswordView : UiEvent()
 }
 @Composable
 fun MyApp() {
@@ -108,6 +114,16 @@ fun MyApp() {
                         launchSingleTop = true
                     }
                 }
+                UiEvent.NavigateToNewPass -> {
+                    navController.navigate(NewPassScreenRoute) {
+                        launchSingleTop = true
+                    }
+                }
+                UiEvent.NavigateToPasswordView -> {
+                    navController.navigate(PasswordViewScreenRoute) {
+                        launchSingleTop = true
+                    }
+                }
             }
         }
     }
@@ -123,6 +139,12 @@ fun MyApp() {
         }
         composable<PasswordListScreenRoute>{
             PasswordListScreen(navController = navController, passwords)
+        }
+        composable<NewPassScreenRoute>{
+            NewPassScreen(navController = navController)
+        }
+        composable<PasswordViewScreenRoute>{
+            PasswordViewScreen(navController=navController)
         }
     }
 }
