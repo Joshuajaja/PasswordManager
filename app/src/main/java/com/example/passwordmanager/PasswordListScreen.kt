@@ -74,8 +74,17 @@ fun PasswordListScreen(navController: NavController, passwords: List<PasswordEnt
                         launchSingleTop = true
                     }
                 }
-                UiEvent.NavigateToPasswordView -> {
-                    navController.navigate(PasswordViewScreenRoute) {
+                is UiEvent.NavigateToPasswordView -> {
+                    navController.navigate(
+                        PasswordViewScreenRoute(event.id)
+                    ) {
+                        launchSingleTop = true
+                    }
+                }
+                is UiEvent.NavigateToEditPassword -> {
+                    navController.navigate(
+                        EditPasswordScreenRoute(event.id)
+                    ) {
                         launchSingleTop = true
                     }
                 }
@@ -90,14 +99,14 @@ fun PasswordListScreen(navController: NavController, passwords: List<PasswordEnt
                 verticalArrangement = Arrangement.Top,
                     modifier = Modifier.safeDrawingPadding()) {
                 items(passwords){
-                    password -> PasswordItem(password)
+                    password -> PasswordItem(password, viewModel)
                 }
             }
         Surface(shape = MaterialTheme.shapes.medium) { }
         Button(modifier = Modifier
             .size(60.dp)
             .align(Alignment.BottomEnd),
-            onClick = { viewModel.toNewPasswordPage() }){
+            onClick = {viewModel.toNewPasswordPage() }){
             Text(text = "+",
                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = 37.sp))
         }
@@ -106,14 +115,16 @@ fun PasswordListScreen(navController: NavController, passwords: List<PasswordEnt
 }
 
 @Composable
-fun PasswordItem(password: PasswordEntity) {
+fun PasswordItem(password: PasswordEntity, viewModel: PasswordListViewModel) {
     Row(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(all = 8.dp)
             .fillMaxWidth()
-            .clickable{}) {
+            .clickable {
+                viewModel.toPasswordViewScreen(password.uid)
+            }) {
         Image(
             painter = painterResource(R.drawable.folder_document_file_format_svgrepo_com),
             contentDescription = null,
@@ -130,8 +141,3 @@ fun PasswordItem(password: PasswordEntity) {
     }
 }
 
-@Preview
-@Composable
-fun PasswordItemPreview(){
-    PasswordItem(PasswordEntity(2,"Google","pass"))
-}

@@ -13,12 +13,19 @@ interface PasswordDao {
     @Query("SELECT * FROM passwordentity WHERE uid IN (:passwordIds)")
     fun loadAllByIds(passwordIds: IntArray): List<PasswordEntity>
 
+    @Query("SELECT * FROM passwordentity WHERE uid IN (:passwordId)")
+    suspend fun loadById(passwordId: Int): PasswordEntity
+
+    @Query("UPDATE passwordentity SET Name = :name, Password = :password WHERE uid = :id")
+    suspend fun updateById(id: Int, name: String, password: String)
     @Insert
     fun insertAll(vararg pins: PasswordEntity)
 
     @Delete
     fun delete(password: PasswordEntity)
 
+    @Query("DELETE FROM passwordentity WHERE uid = :id")
+    suspend fun deleteById(id: Int)
     @Insert
     fun insertPassword(password: PasswordEntity)
 }

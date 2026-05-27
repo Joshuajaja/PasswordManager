@@ -73,13 +73,16 @@ object PasswordListScreenRoute
 @Serializable
 object NewPassScreenRoute
 @Serializable
-object PasswordViewScreenRoute
+data class PasswordViewScreenRoute(val id: Int)
+@Serializable
+data class EditPasswordScreenRoute(val id: Int)
 sealed class UiEvent {
     data object NavigateToNewPin : UiEvent()
     data object NavigateToPassword : UiEvent()
     data object NavigateToPasswordList : UiEvent()
     data object NavigateToNewPass : UiEvent()
-    data object NavigateToPasswordView : UiEvent()
+    data class NavigateToPasswordView(val id: Int) : UiEvent()
+    data class NavigateToEditPassword(val id: Int) : UiEvent()
 }
 @Composable
 fun MyApp() {
@@ -119,8 +122,17 @@ fun MyApp() {
                         launchSingleTop = true
                     }
                 }
-                UiEvent.NavigateToPasswordView -> {
-                    navController.navigate(PasswordViewScreenRoute) {
+                is UiEvent.NavigateToPasswordView -> {
+                    navController.navigate(
+                        PasswordViewScreenRoute(event.id)
+                    ) {
+                        launchSingleTop = true
+                    }
+                }
+                is UiEvent.NavigateToEditPassword -> {
+                    navController.navigate(
+                        EditPasswordScreenRoute(event.id)
+                    ) {
                         launchSingleTop = true
                     }
                 }
@@ -143,8 +155,13 @@ fun MyApp() {
         composable<NewPassScreenRoute>{
             NewPassScreen(navController = navController)
         }
-        composable<PasswordViewScreenRoute>{
-            PasswordViewScreen(navController=navController)
+        composable<PasswordViewScreenRoute>{ backStackEntry ->
+            val route = backStackEntry.toRoute<PasswordViewScreenRoute>()
+            PasswordViewScreen(navController=navController, route.id)
+        }
+        composable<EditPasswordScreenRoute>{ backStackEntry ->
+            val route = backStackEntry.toRoute<EditPasswordScreenRoute>()
+            EditPasswordScreen(navController=navController, route.id)
         }
     }
 }

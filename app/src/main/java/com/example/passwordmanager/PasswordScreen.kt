@@ -32,13 +32,6 @@ import androidx.core.text.isDigitsOnly
 import androidx.navigation.NavController
 import com.example.passwordmanager.data.PinDao
 
-class DigitOnlyInputTransformation : InputTransformation {
-    override fun TextFieldBuffer.transformInput() {
-        if (!asCharSequence().isDigitsOnly()) {
-            revertAllChanges()
-        }
-    }
-}
 @Composable
 fun PasswordScreen(navController: NavController){
     val app = androidx.compose.ui.platform.LocalContext.current.applicationContext
@@ -74,8 +67,17 @@ fun PasswordScreen(navController: NavController){
                         launchSingleTop = true
                     }
                 }
-                UiEvent.NavigateToPasswordView -> {
-                    navController.navigate(PasswordViewScreenRoute) {
+                is UiEvent.NavigateToPasswordView -> {
+                    navController.navigate(
+                        PasswordViewScreenRoute(event.id)
+                    ) {
+                        launchSingleTop = true
+                    }
+                }
+                is UiEvent.NavigateToEditPassword -> {
+                    navController.navigate(
+                        EditPasswordScreenRoute(event.id)
+                    ) {
                         launchSingleTop = true
                     }
                 }

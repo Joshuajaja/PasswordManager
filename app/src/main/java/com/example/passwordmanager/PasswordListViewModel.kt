@@ -16,4 +16,9 @@ class PasswordListViewModel (private val dao: PasswordDao) : ViewModel() {
             _events.emit(UiEvent.NavigateToNewPass)
         }
     }
+    fun toPasswordViewScreen(id: Int){
+        viewModelScope.launch {
+            _events.emit(UiEvent.NavigateToPasswordView(id))
+        }
+    }
 }

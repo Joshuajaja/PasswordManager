@@ -65,8 +65,17 @@ fun NewPinScreen(navController: NavController){
                         launchSingleTop = true
                     }
                 }
-                UiEvent.NavigateToPasswordView -> {
-                    navController.navigate(PasswordViewScreenRoute) {
+                is UiEvent.NavigateToPasswordView -> {
+                    navController.navigate(
+                        PasswordViewScreenRoute(event.id)
+                    ) {
+                        launchSingleTop = true
+                    }
+                }
+                is UiEvent.NavigateToEditPassword -> {
+                    navController.navigate(
+                        EditPasswordScreenRoute(event.id)
+                    ) {
                         launchSingleTop = true
                     }
                 }
