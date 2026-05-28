@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.passwordmanager.data.PasswordDao
 import com.example.passwordmanager.data.PasswordEntity
 import com.example.passwordmanager.data.PinDao
+import com.example.passwordmanager.data.hashString
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val dao: PinDao) : ViewModel() {
@@ -18,7 +19,8 @@ class MainViewModel(private val dao: PinDao) : ViewModel() {
             dbCompare(pin) }
     }
      suspend fun dbCompare(pin: String){
-        val pinIsGood: Boolean = dao.pinCompare(pin)
+         val hashPin = hashString(pin)
+         val pinIsGood: Boolean = dao.pinCompare(hashPin)
         if (pinIsGood){
             _events.emit(UiEvent.NavigateToPasswordList)
         }

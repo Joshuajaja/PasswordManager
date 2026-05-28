@@ -13,7 +13,7 @@ interface PinDao {
     @Query("SELECT * FROM pinentity WHERE uid IN (:pinIds)")
     fun loadAllByIds(pinIds: IntArray): List<PinEntity>
     @Query("SELECT EXISTS(SELECT 1 FROM pinentity WHERE Pin = :inputPin)")
-    suspend fun pinCompare(inputPin: String): Boolean
+    suspend fun pinCompare(inputPin: ByteArray): Boolean
 
     @Query("SELECT EXISTS(SELECT 1 FROM pinentity)")
     suspend fun hasAnyPin(): Boolean

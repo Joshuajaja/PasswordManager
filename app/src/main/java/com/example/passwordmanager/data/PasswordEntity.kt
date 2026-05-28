@@ -8,5 +8,6 @@ import androidx.room.PrimaryKey
 data class PasswordEntity(
     @PrimaryKey(autoGenerate = true) val uid: Int = 0,
     @ColumnInfo(name = "Name") val name: String,
-    @ColumnInfo(name = "Password") val password: String
+    @ColumnInfo(name = "Password") val password: String,
+    @ColumnInfo(name = "iv") val iv: String
 )

@@ -16,8 +16,9 @@ interface PasswordDao {
     @Query("SELECT * FROM passwordentity WHERE uid IN (:passwordId)")
     suspend fun loadById(passwordId: Int): PasswordEntity
 
-    @Query("UPDATE passwordentity SET Name = :name, Password = :password WHERE uid = :id")
-    suspend fun updateById(id: Int, name: String, password: String)
+    @Query("UPDATE passwordentity SET Name = :name, Password = :password, iv = :iv WHERE uid = :id")
+    suspend fun updateById(id: Int, name: String, password: String, iv: String)
+
     @Insert
     fun insertAll(vararg pins: PasswordEntity)
 

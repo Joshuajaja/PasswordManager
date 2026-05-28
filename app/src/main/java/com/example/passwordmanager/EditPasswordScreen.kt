@@ -108,7 +108,7 @@ fun EditPasswordScreen(navController: NavController, id: Int){
                 ), keyboardActions = KeyboardActions(
                     onGo = {
                         viewModel.viewModelScope.launch {
-                            viewModel.UpdatePass(id,name, password)
+                            viewModel.updatePass(id,name, password)
                         }}
                 ))
             Spacer(modifier = Modifier.height(20.dp))
@@ -121,7 +121,7 @@ fun EditPasswordScreen(navController: NavController, id: Int){
                 ), keyboardActions = KeyboardActions(
                     onGo = {
                         viewModel.viewModelScope.launch {
-                            viewModel.UpdatePass(id,name, password)
+                            viewModel.updatePass(id,name, password)
                         }}
                 )
             )
