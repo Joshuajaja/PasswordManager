@@ -4,49 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.InputTransformation
-import androidx.compose.foundation.text.input.TextFieldBuffer
-import androidx.compose.foundation.text.input.maxLength
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.then
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SecureTextField
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import androidx.room.Room
-import com.example.passwordmanager.data.AppDatabase
-import com.example.passwordmanager.data.PasswordDao
 import com.example.passwordmanager.ui.theme.PasswordManagerTheme
 import kotlinx.serialization.Serializable
 
@@ -71,16 +41,19 @@ object PasswordScreenRoute
 @Serializable
 object PasswordListScreenRoute
 @Serializable
-object NewPassScreenRoute
+data class NewPassScreenRoute(val name: String, val genPass: String)
 @Serializable
 data class PasswordViewScreenRoute(val id: Int)
 @Serializable
 data class EditPasswordScreenRoute(val id: Int)
+@Serializable
+data class PasswordGenScreenRoute(val name: String)
 sealed class UiEvent {
     data object NavigateToNewPin : UiEvent()
     data object NavigateToPassword : UiEvent()
     data object NavigateToPasswordList : UiEvent()
-    data object NavigateToNewPass : UiEvent()
+    data class NavigateToNewPass(val name: String, val genPass: String) : UiEvent()
+    data class NavigateToPasswordGen(val name: String) : UiEvent()
     data class NavigateToPasswordView(val id: Int) : UiEvent()
     data class NavigateToEditPassword(val id: Int) : UiEvent()
 }
@@ -117,8 +90,10 @@ fun MyApp() {
                         launchSingleTop = true
                     }
                 }
-                UiEvent.NavigateToNewPass -> {
-                    navController.navigate(NewPassScreenRoute) {
+                is UiEvent.NavigateToNewPass -> {
+                    navController.navigate(
+                        UiEvent.NavigateToNewPass(event.name, event.genPass)
+                    ) {
                         launchSingleTop = true
                     }
                 }
@@ -132,6 +107,13 @@ fun MyApp() {
                 is UiEvent.NavigateToEditPassword -> {
                     navController.navigate(
                         EditPasswordScreenRoute(event.id)
+                    ) {
+                        launchSingleTop = true
+                    }
+                }
+                is UiEvent.NavigateToPasswordGen -> {
+                    navController.navigate(
+                        PasswordGenScreenRoute(event.name)
                     ) {
                         launchSingleTop = true
                     }
@@ -152,8 +134,9 @@ fun MyApp() {
         composable<PasswordListScreenRoute>{
             PasswordListScreen(navController = navController, passwords)
         }
-        composable<NewPassScreenRoute>{
-            NewPassScreen(navController = navController)
+        composable<NewPassScreenRoute>{ backStackEntry ->
+            val route = backStackEntry.toRoute<NewPassScreenRoute>()
+            NewPassScreen(navController=navController, route.name, route.genPass)
         }
         composable<PasswordViewScreenRoute>{ backStackEntry ->
             val route = backStackEntry.toRoute<PasswordViewScreenRoute>()
@@ -162,6 +145,10 @@ fun MyApp() {
         composable<EditPasswordScreenRoute>{ backStackEntry ->
             val route = backStackEntry.toRoute<EditPasswordScreenRoute>()
             EditPasswordScreen(navController=navController, route.id)
+        }
+        composable<PasswordGenScreenRoute>{ backStackEntry ->
+            val route = backStackEntry.toRoute<PasswordGenScreenRoute>()
+            PasswordGenScreen(navController=navController, route.name)
         }
     }
 }

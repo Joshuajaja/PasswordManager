@@ -13,9 +13,10 @@ import kotlinx.coroutines.withContext
 class NewPassViewModel(private val passDao: PasswordDao) : ViewModel() {
     private val _events = kotlinx.coroutines.flow.MutableSharedFlow<UiEvent>()
     val events = _events
+    var name: String = ""
 
     suspend fun newPass(name: String, password: String){
-        if(name == "" || password == ""){_events.emit(UiEvent.NavigateToNewPass)}
+        if(name == "" || password == ""){_events.emit(UiEvent.NavigateToNewPass("", ""))}
         else{
             val encryption: EncryptionData = cipherString(password)
             val newPassword = PasswordEntity(
@@ -29,5 +30,10 @@ class NewPassViewModel(private val passDao: PasswordDao) : ViewModel() {
             _events.emit(UiEvent.NavigateToPasswordList)
         }
     }
+    }
+    fun toGenPassPage(name: String){
+        viewModelScope.launch {
+            _events.emit(UiEvent.NavigateToPasswordGen(name))
+        }
     }
 }

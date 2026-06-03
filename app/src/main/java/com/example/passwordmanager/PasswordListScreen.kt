@@ -1,7 +1,6 @@
 package com.example.passwordmanager
 
 import android.annotation.SuppressLint
-import android.graphics.fonts.FontFamily
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -29,14 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.passwordmanager.data.PasswordEntity
 
 @SuppressLint("SuspiciousIndentation")
@@ -69,8 +62,10 @@ fun PasswordListScreen(navController: NavController, passwords: List<PasswordEnt
                         launchSingleTop = true
                     }
                 }
-                UiEvent.NavigateToNewPass -> {
-                    navController.navigate(NewPassScreenRoute) {
+                is UiEvent.NavigateToNewPass -> {
+                    navController.navigate(
+                        NewPassScreenRoute(event.name, event.genPass)
+                    ) {
                         launchSingleTop = true
                     }
                 }
@@ -84,6 +79,13 @@ fun PasswordListScreen(navController: NavController, passwords: List<PasswordEnt
                 is UiEvent.NavigateToEditPassword -> {
                     navController.navigate(
                         EditPasswordScreenRoute(event.id)
+                    ) {
+                        launchSingleTop = true
+                    }
+                }
+                is UiEvent.NavigateToPasswordGen -> {
+                    navController.navigate(
+                        PasswordGenScreenRoute(event.name)
                     ) {
                         launchSingleTop = true
                     }

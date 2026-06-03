@@ -1,14 +1,15 @@
 package com.example.passwordmanager
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,10 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
@@ -36,7 +34,7 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 
 @Composable
-fun NewPassScreen(navController: NavController){
+fun NewPassScreen(navController: NavController, passwordName: String = "", genPass: String = ""){
     val app = LocalContext.current.applicationContext
             as PasswordManagerApp
     val dao = app.db.pinDao()
@@ -65,8 +63,10 @@ fun NewPassScreen(navController: NavController){
                         launchSingleTop = true
                     }
                 }
-                UiEvent.NavigateToNewPass -> {
-                    navController.navigate(NewPassScreenRoute) {
+                is UiEvent.NavigateToNewPass -> {
+                    navController.navigate(
+                        UiEvent.NavigateToNewPass(event.name, event.genPass)
+                    ) {
                         launchSingleTop = true
                     }
                 }
@@ -84,18 +84,28 @@ fun NewPassScreen(navController: NavController){
                         launchSingleTop = true
                     }
                 }
+                is UiEvent.NavigateToPasswordGen -> {
+                    navController.navigate(
+                        PasswordGenScreenRoute(event.name)
+                    ) {
+                        launchSingleTop = true
+                    }
+                }
             }
         }
     }
-    var name by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf(passwordName) }
+    var password by remember { mutableStateOf(genPass) }
     val secondFocusRequester = remember { FocusRequester() }
     Surface {
         Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
         ) {
-            Column() {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
             TextField(
                 label = { Text("Name") },
                 value = name,
@@ -123,6 +133,13 @@ fun NewPassScreen(navController: NavController){
                 )
             )
         }
+            Button(modifier = Modifier
+                .size(60.dp)
+                .align(Alignment.CenterEnd),
+                onClick = {viewModel.toGenPassPage(name) }){
+                Text(text = "\uD83C\uDFB2",
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 25.sp))
+            }
         }
     }
 }

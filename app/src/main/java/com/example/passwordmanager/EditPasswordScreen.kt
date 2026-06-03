@@ -71,8 +71,10 @@ fun EditPasswordScreen(navController: NavController, id: Int){
                         launchSingleTop = true
                     }
                 }
-                UiEvent.NavigateToNewPass -> {
-                    navController.navigate(NewPassScreenRoute) {
+                is UiEvent.NavigateToNewPass -> {
+                    navController.navigate(
+                        UiEvent.NavigateToNewPass(event.name, event.genPass)
+                    ) {
                         launchSingleTop = true
                     }
                 }
@@ -86,6 +88,13 @@ fun EditPasswordScreen(navController: NavController, id: Int){
                 is UiEvent.NavigateToEditPassword -> {
                     navController.navigate(
                         EditPasswordScreenRoute(event.id)
+                    ) {
+                        launchSingleTop = true
+                    }
+                }
+                is UiEvent.NavigateToPasswordGen -> {
+                    navController.navigate(
+                        PasswordGenScreenRoute(event.name)
                     ) {
                         launchSingleTop = true
                     }

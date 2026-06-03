@@ -1,6 +1,5 @@
 package com.example.passwordmanager
 
-import android.widget.Space
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,16 +12,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import com.example.passwordmanager.data.PasswordEntity
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 
 @Composable
 fun PasswordViewScreen(navController: NavController, id: Int){
@@ -59,8 +57,10 @@ fun PasswordViewScreen(navController: NavController, id: Int){
                         launchSingleTop = true
                     }
                 }
-                UiEvent.NavigateToNewPass -> {
-                    navController.navigate(NewPassScreenRoute) {
+                is UiEvent.NavigateToNewPass -> {
+                    navController.navigate(
+                        UiEvent.NavigateToNewPass(event.name, event.genPass)
+                    ) {
                         launchSingleTop = true
                     }
                 }
@@ -78,6 +78,13 @@ fun PasswordViewScreen(navController: NavController, id: Int){
                         launchSingleTop = true
                     }
                 }
+                is UiEvent.NavigateToPasswordGen -> {
+                    navController.navigate(
+                        PasswordGenScreenRoute(event.name)
+                    ) {
+                        launchSingleTop = true
+                    }
+                }
             }
         }
     }
@@ -86,7 +93,7 @@ fun PasswordViewScreen(navController: NavController, id: Int){
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Column() {
+            Column {
                 Text(text = password?.name ?: String(),
                     style = MaterialTheme.typography.bodyLarge.copy(fontSize = 32.sp))
                 Spacer(modifier = Modifier.height(20.dp))

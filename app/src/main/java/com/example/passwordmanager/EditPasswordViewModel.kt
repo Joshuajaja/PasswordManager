@@ -17,7 +17,7 @@ class EditPasswordViewModel(private val passDao: PasswordDao) : ViewModel() {
     val events = _events
     val password = MutableStateFlow<PasswordEntity?>(null)
     suspend fun updatePass(inputId: Int, name: String, password: String){
-        if(name == "" || password == ""){_events.emit(UiEvent.NavigateToNewPass)}
+        if(name == "" || password == ""){_events.emit(UiEvent.NavigateToNewPass("", ""))}
         else{
             val encryption: EncryptionData = cipherString(password)
             viewModelScope.launch {
